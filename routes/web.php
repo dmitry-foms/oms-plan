@@ -4145,6 +4145,7 @@ function getLevel(int $year, int $monthNum, int $ts, int $moId, int $bedProfileI
     $l2 = '2';
     $l2_1 = '2.1';
     $l2_2 = '2.2';
+    $l2_3 = '2.3';
     $l3_1 = '3.1';
     $l3_2 = '3.2';
     $l3_3 = '3.3';
@@ -4210,6 +4211,39 @@ function getLevel(int $year, int $monthNum, int $ts, int $moId, int $bedProfileI
                     $lResult = $l3_3;
                     break;
 
+            }
+
+            if ($monthNum > 3) {
+                switch ($moId) {
+                    case 17	/* ГБУ "Далматовская ЦРБ" */:
+                    case 25	/* ГБУ "Шадринская ЦРБ" */:
+                        $lResult = $l2_1;
+                        break;
+
+                    case 89	/* ГБУ «Межрайонная больница №1» */:
+                    case 90	/* ГБУ «Межрайонная больница №2» */:
+                        $lResult = $l2_3;
+                        break;
+
+                    case 91	/* ГБУ «Межрайонная больница №3» */:
+                    case 92	/* ГБУ «Межрайонная больница №4» */:
+                    case 93	/* ГБУ «Межрайонная больница №5» */:
+                    case 94	/* ГБУ «Межрайонная больница №6» */:
+                        $lResult = $l2_2;
+                        break;
+
+                    case 95	/* ГБУ «Межрайонная больница №7» */:
+                        $lResult = $l2_3;
+                        break;
+
+                    case 96	/* ГБУ «Межрайонная больница №8» */:
+                    case 13	/* ГБУ «КОКВД» */:
+                    case 7	/* ГБУ "Курганская областная специализированная инфекционная больница" */:
+                        $lResult = $l2_2;
+                        break;
+
+
+                }
             }
         }
 
