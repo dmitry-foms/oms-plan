@@ -4217,6 +4217,8 @@ function getLevel(int $year, int $monthNum, int $ts, int $moId, int $bedProfileI
                 switch ($moId) {
                     case 17	/* ГБУ "Далматовская ЦРБ" */:
                     case 25	/* ГБУ "Шадринская ЦРБ" */:
+                    case 38	/* ЧУЗ "РЖД-Медицина" г. Курган" */:
+                    case 51	/* ГБУ "Санаторий "Озеро Горькое" */:
                         $lResult = $l2_1;
                         break;
 
