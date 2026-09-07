@@ -155,8 +155,8 @@ Route::get('/get-pump-monitoring-profiles-planned-indicators-relationships', fun
 
     $spreadsheet = $reader->load($templateFullFilepath);
     $sheet = $spreadsheet->getActiveSheet();
-    $startRow = 8;
-    $endRow = 628;
+    $startRow = 2;
+    $endRow = $sheet->getHighestRow();
 
     $monitoringProfileCodeCol = 2;
     $monitoringProfileNameCol = 1;
@@ -186,7 +186,7 @@ Route::get('/get-pump-monitoring-profiles-planned-indicators-relationships', fun
 
         $monitoringProfile = PumpMonitoringProfiles::where('code', $code)->first();
         if (is_null($monitoringProfile)) {
-            throw new Exception("Отсутствует профиль мониторинга для кода $code");
+            throw new Exception("Отсутствует профиль мониторинга для кода: $code");
         }
         $monitoringProfileUnits = $monitoringProfile->profilesUnits;
         if ($monitoringProfileUnits->count() > 2) {
