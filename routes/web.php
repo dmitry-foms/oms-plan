@@ -251,11 +251,18 @@ Route::get('/fill-pump-monitoring-profiles-planned-indicators-relationships', fu
     $typeFinId = IndicatorType::where('name', 'money')->first()->id;
     $typeQuantId = IndicatorType::where('name', 'volume')->first()->id;
 
+    echo '<ul style="list-style-type: none">'; 
+
     $num = 1;
     for ($i=$startRow; $i <= $endRow; $i++) {
         $name = trim($sheet->getCell([$monitoringProfileNameCol, $i])->getValue());
         $code = trim($sheet->getCell([$monitoringProfileCodeCol, $i])->getValue());
         $indicators = [];
+
+        if ($code == '') { 
+            echo '<li style="color: orange">WARNING: в строке ' . $i . ' файла ' . $templateFullFilepath . ' не обнаружен код</li>'; 
+            continue;
+        }
 
         // id показателей перечислены в нескольких столбцах
         // внутри каждого столбца значения могут быть перечислены через запятую
@@ -309,13 +316,21 @@ Route::get('/fill-pump-monitoring-profiles-planned-indicators-relationships', fu
         }
 
         foreach ($monitoringProfileUnits as $u) {
-            echo $num++ . ') ' . ($t ? 'OK  ' : 'ERROR  ') . $p . ' ' . $u->unit->name . ' ' . $monitoringProfile->name . ' ' . $code . '<br>';
+            echo '<li style="color: ' . ($t?'black':'red') . '">' . $num++ . ') ' . ($t ? 'OK  ' : 'ERROR  ') . $p . ' ' . $u->unit->name . ' ' . $monitoringProfile->name . ' ' . $code . '</li>';
+
+            if (!$t) {
+                echo '<li>' . $name . '</li>';
+                echo '<li>' . $monitoringProfile->name . '</li>';
+            }
+
             if (count($indicators) > 0) {
                 $u->plannedIndicators()->attach($indicators);
             }
         }
     }
-/**/
+
+    echo '</ul>';
+
     return 'ок';
     //phpinfo();
 });
