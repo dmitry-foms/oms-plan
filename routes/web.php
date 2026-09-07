@@ -238,8 +238,8 @@ Route::get('/fill-pump-monitoring-profiles-planned-indicators-relationships', fu
 
     $spreadsheet = $reader->load($templateFullFilepath);
     $sheet = $spreadsheet->getActiveSheet();
-    $startRow = 8;
-    $endRow = 628;
+    $startRow = 1;
+    $endRow = $sheet->getHighestRow();
 
     $monitoringProfileCodeCol = 2;
     $monitoringProfileNameCol = 1;
