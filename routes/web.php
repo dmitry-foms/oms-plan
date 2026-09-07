@@ -331,7 +331,7 @@ Route::get('/fill-pump-monitoring-profiles-planned-indicators-relationships', fu
             }
 
             if (count($indicators) > 0) {
-                $u->plannedIndicators()->attach($indicators);
+                $u->plannedIndicators()->syncWithoutDetaching($indicators);
             }
         }
     }
