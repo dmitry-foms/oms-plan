@@ -148,7 +148,7 @@ Route::get('/pump-plan-v2', function (PumpMonitoringProfilesTreeService $treeSer
 Route::get('/get-pump-monitoring-profiles-planned-indicators-relationships', function () {
     $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xlsx");
     $path = 'xlsx/pump';
-    $templateFileName = 'PumpPgg2025';
+    $templateFileName = 'PumpPgg2026';
     $templateFileNameExt = '.xlsx';
     $templateFilePath = $path . DIRECTORY_SEPARATOR . $templateFileName . $templateFileNameExt;
     $templateFullFilepath = Storage::path($templateFilePath);
@@ -174,7 +174,8 @@ Route::get('/get-pump-monitoring-profiles-planned-indicators-relationships', fun
 
         $monitoringProfileTypeId = null;
         // определить тип профиля мониторинга
-        if (str_ends_with($name, '(руб.)')) {
+        if (str_ends_with($name, '(руб.)') || 
+            str_ends_with($name, 'руб.')) {
             $monitoringProfileTypeId = $typeFinId;
         } else if (str_ends_with($name, '(кол-во)')) {
             $monitoringProfileTypeId = $typeQuantId;
@@ -231,7 +232,7 @@ Route::get('/get-pump-monitoring-profiles-planned-indicators-relationships', fun
 Route::get('/fill-pump-monitoring-profiles-planned-indicators-relationships', function () {
     $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xlsx");
     $path = 'xlsx/pump';
-    $templateFileName = 'PumpPgg2025_IN.xlsx';
+    $templateFileName = 'PumpPgg2026_IN.xlsx';
     $templateFilePath = $path . DIRECTORY_SEPARATOR . $templateFileName;
     $templateFullFilepath = Storage::path($templateFilePath);
 
@@ -283,7 +284,8 @@ Route::get('/fill-pump-monitoring-profiles-planned-indicators-relationships', fu
         $p = 'ERROR';
         $monitoringProfileUnits = null;
         // if (str_ends_with($name, '(сумма)')) {
-        if (str_ends_with($name, '(руб.)')) {
+        if (str_ends_with($name, '(руб.)') || 
+            str_ends_with($name, 'руб.')) {
             $p = 'финансовая часть';
             $monitoringProfileUnits = $monitoringProfile->profilesUnits()->whereHas('unit', function (Builder $query) use ($typeFinId) {
                     $query->where('type_id', $typeFinId);
@@ -319,7 +321,7 @@ Route::get('/pump-monitoring-profiles-update-codes', function () {
 
     $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xlsx");
     $path = 'xlsx/pump';
-    $templateFileName = 'PumpMonitoringProfiles_v6.xlsx';
+    $templateFileName = 'PumpMonitoringProfiles_v8.xlsx';
     $templateFilePath = $path . DIRECTORY_SEPARATOR . $templateFileName;
     $templateFullFilepath = Storage::path($templateFilePath);
 
@@ -452,7 +454,7 @@ Route::get('/fill-pump-monitoring-profiles', function () {
 
     $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xlsx");
     $path = 'xlsx/pump';
-    $templateFileName = 'PumpMonitoringProfiles_v6.xlsx';
+    $templateFileName = 'PumpMonitoringProfiles_v8.xlsx';
     $templateFilePath = $path . DIRECTORY_SEPARATOR . $templateFileName;
     $templateFullFilepath = Storage::path($templateFilePath);
 
