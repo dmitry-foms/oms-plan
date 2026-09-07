@@ -269,6 +269,13 @@ Route::get('/fill-pump-monitoring-profiles-planned-indicators-relationships', fu
         $d = 0;
         do {
             $indicatorsRead = trim($sheet->getCell([$plannedIndicatorIdCol + $d, $i])->getValue());
+
+            // Excel может заменить запятую на точку. Поскольку все коды представляют собой целое число,
+            // заменяем точку на запятую
+            if (strpos($indicatorsRead, '.') !== false)  { 
+                $indicatorsRead = str_replace('.', ',', $indicatorsRead); 
+            }
+
             $indicatorsTemp = explode(',', $indicatorsRead);
             for ($k = 0; $k < count($indicatorsTemp); $k++) {
                 $ind = trim($indicatorsTemp[$k]);
