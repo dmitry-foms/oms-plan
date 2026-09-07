@@ -185,6 +185,9 @@ Route::get('/get-pump-monitoring-profiles-planned-indicators-relationships', fun
         }
 
         $monitoringProfile = PumpMonitoringProfiles::where('code', $code)->first();
+        if (is_null($monitoringProfile)) {
+            throw new Exception("Отсутствует профиль мониторинга для кода $code");
+        }
         $monitoringProfileUnits = $monitoringProfile->profilesUnits;
         if ($monitoringProfileUnits->count() > 2) {
             throw new Exception("$code содержит больше 2 'частей'");
@@ -279,7 +282,11 @@ Route::get('/fill-pump-monitoring-profiles-planned-indicators-relationships', fu
 
         $indicators = array_unique($indicators, SORT_NUMERIC);
         $monitoringProfile = PumpMonitoringProfiles::where('code', $code)->first();
-        $t = str_starts_with($name, $monitoringProfile->name);
+        if (is_null($monitoringProfile)) {
+            throw new Exception("Отсутствует профиль мониторинга для кода: $code");
+        }
+        //$t = str_starts_with($name, $monitoringProfile->name);
+        $t = str_starts_with(str_replace('  ', ' ', $name), str_replace('  ', ' ', $monitoringProfile->name));
 
         $p = 'ERROR';
         $monitoringProfileUnits = null;
@@ -296,9 +303,11 @@ Route::get('/fill-pump-monitoring-profiles-planned-indicators-relationships', fu
                 $query->where('type_id', $typeQuantId);
             })->get();
         }
+
         if(!$monitoringProfileUnits) {
             throw new Exception(" $name");
         }
+
         foreach ($monitoringProfileUnits as $u) {
             echo $num++ . ') ' . ($t ? 'OK  ' : 'ERROR  ') . $p . ' ' . $u->unit->name . ' ' . $monitoringProfile->name . ' ' . $code . '<br>';
             if (count($indicators) > 0) {
