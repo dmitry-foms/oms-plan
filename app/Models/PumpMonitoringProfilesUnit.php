@@ -17,7 +17,7 @@ class PumpMonitoringProfilesUnit extends Model
     public function plannedIndicators(): BelongsToMany
     {
         return $this->belongsToMany(PlannedIndicator::class, 'tbl_pump_monitoring_profiles_unit_planned_indicators',
-                      'monitoring_profile_unit_id', 'planned_indicator_id');
+                      'monitoring_profile_unit_id', 'planned_indicator_id')->withTimestamps();
     }
 
     public function pumpMonitoringProfiles(): BelongsTo
