@@ -147,20 +147,30 @@ Route::get('/pump-plan-v2', function (PumpMonitoringProfilesTreeService $treeSer
  */
 Route::get('/get-pump-monitoring-profiles-planned-indicators-relationships', function () {
     $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xlsx");
-    $path = 'xlsx/pump';
-    $templateFileName = 'PumpPgg2026';
-    $templateFileNameExt = '.xlsx';
-    $templateFilePath = $path . DIRECTORY_SEPARATOR . $templateFileName . $templateFileNameExt;
+    $path = config('app.pump.xlsxPath', 'xlsx/pump');
+    $templateFileName = config('app.pump.relations.templateFileName', 'PumpPgg' . date('Y') . '.xlsx');
+    $templateFilePath = $path . DIRECTORY_SEPARATOR . $templateFileName;
     $templateFullFilepath = Storage::path($templateFilePath);
 
     $spreadsheet = $reader->load($templateFullFilepath);
     $sheet = $spreadsheet->getActiveSheet();
-    $startRow = 2;
+    $startRow = 1;
     $endRow = $sheet->getHighestRow();
 
-    $monitoringProfileCodeCol = 2;
-    $monitoringProfileNameCol = 1;
-    $plannedIndicatorIdCol = 3;
+    $monitoringProfileCodeCol = config('app.pump.relations.monitoringProfileCodeColumn', 2);
+    $monitoringProfileNameCol = config('app.pump.relations.monitoringProfileNameColumn', 1);
+    $plannedIndicatorIdCol = config('app.pump.relations.plannedIndicatorIdColumn', 3);
+
+    // Определение начальной строки с данными
+    for ($i = 1; $i <= $endRow; $i++) {
+        if ((preg_match('/\d{6}/', $sheet->getCell([$monitoringProfileCodeCol, $i])->getValue()) == 1) &&
+            (strlen(trim($sheet->getCell([$monitoringProfileNameCol, $i])->getValue())) > 0) &&
+            (preg_match('/\d+/', $sheet->getCell([$plannedIndicatorIdCol, $i])->getValue()) == 1)) {
+            $startRow = $i;
+
+            break;
+        }
+    }
 
     $typeFinId = IndicatorType::where('name', 'money')->first()->id;
     $typeQuantId = IndicatorType::where('name', 'volume')->first()->id;
@@ -217,9 +227,9 @@ Route::get('/get-pump-monitoring-profiles-planned-indicators-relationships', fun
     }
 
 
-    $resultFileName = $templateFileName . '' . $templateFileNameExt;
+    //$resultFileName = $templateFileName . '' . $templateFileNameExt;
     $strDateTimeNow = date("Y-m-d-His");
-    $resultFilePath = $path . DIRECTORY_SEPARATOR . $strDateTimeNow . ' ' . $resultFileName;
+    $resultFilePath = $path . DIRECTORY_SEPARATOR . $strDateTimeNow . ' ' . $templateFileName;
     $fullResultFilepath = Storage::path($resultFilePath);
 
 
@@ -234,8 +244,8 @@ Route::get('/get-pump-monitoring-profiles-planned-indicators-relationships', fun
  */
 Route::get('/fill-pump-monitoring-profiles-planned-indicators-relationships', function () {
     $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xlsx");
-    $path = 'xlsx/pump';
-    $templateFileName = 'PumpPgg2026_IN.xlsx';
+    $path = config('app.pump.xlsxPath', 'xlsx/pump');
+    $templateFileName = config('templateFileNameIn', 'PumpPgg' . date('Y') . '_IN.xlsx');
     $templateFilePath = $path . DIRECTORY_SEPARATOR . $templateFileName;
     $templateFullFilepath = Storage::path($templateFilePath);
 
@@ -244,9 +254,20 @@ Route::get('/fill-pump-monitoring-profiles-planned-indicators-relationships', fu
     $startRow = 1;
     $endRow = $sheet->getHighestRow();
 
-    $monitoringProfileCodeCol = 2;
-    $monitoringProfileNameCol = 1;
-    $plannedIndicatorIdCol = 3;
+    $monitoringProfileCodeCol = config('monitoringProfileCodeColumn', 2);
+    $monitoringProfileNameCol = config('monitoringProfileNameColumn', 1);
+    $plannedIndicatorIdCol = config('plannedIndicatorIdColumn', 3);
+
+    // Определение начальной строки с данными
+    for ($i = 1; $i <= $endRow; $i++) {
+        if ((preg_match('/\d{6}/', $sheet->getCell([$monitoringProfileCodeCol, $i])->getValue()) == 1) &&
+            (strlen(trim($sheet->getCell([$monitoringProfileNameCol, $i])->getValue())) > 0) &&
+            (preg_match('/\d+/', $sheet->getCell([$plannedIndicatorIdCol, $i])->getValue()) == 1)) {
+            $startRow = $i;
+
+            break;
+        }
+    }
 
     $typeFinId = IndicatorType::where('name', 'money')->first()->id;
     $typeQuantId = IndicatorType::where('name', 'volume')->first()->id;
@@ -351,26 +372,25 @@ Route::get('/pump-monitoring-profiles-update-codes', function () {
     $FIN_QUANT_PROFILE_TYPE_STR = "финансовая и количественная часть";
 
     $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xlsx");
-    $path = 'xlsx/pump';
-    $templateFileName = 'PumpMonitoringProfiles_v8.xlsx';
+    $path = config('app.pump.xlsxPath', 'xlsx/pump');
+    $templateFileName = config('app.pump.reference.referenceFileName', 'PumpMonitoringProfiles_v8.xlsx');
     $templateFilePath = $path . DIRECTORY_SEPARATOR . $templateFileName;
     $templateFullFilepath = Storage::path($templateFilePath);
 
     $spreadsheet = $reader->load($templateFullFilepath);
     $sheet = $spreadsheet->getActiveSheet();
 
-    $omsProgramCol = 1;
-    // $recIdCol = 2;
-    // $parentRecIdCol = 3;
-    $monitoringProfileCodeCol = 4;
-    $monitoringProfileParentCodeCol = 5;
-    $monitoringProfileShortNameCol = 6;
-    $monitoringProfileNameCol = 7;
-    // $monitoringProfileNestingLevel = 8;
-    $parentRelationCol = 9;
-    $monitoringProfileTypeCol = 10;
-    $unitCol = 11;
-
+    $omsProgramCol = config('app.pump.reference.omsProgramColumn', 1);
+    // $recIdCol = config('app.pump.reference.recIdColumn', 2);
+    // $parentRecIdCol = config('app.pump.reference.parentRecIdColumn', 3);
+    $monitoringProfileCodeCol = config('app.pump.reference.monitoringProfileCodeCol', 4);
+    $monitoringProfileParentCodeCol = config('app.pump.reference.monitoringProfile', 5);
+    $monitoringProfileShortNameCol = config('app.pump.reference.monitoringProfileShortNameColumn', 6);
+    $monitoringProfileNameCol = config('app.pump.reference.monitoringProfileNameColumn', 7);
+    // $monitoringProfileNestingLevel = config('app.pump.reference.monitoringProfileNestingLevelColumn', 8);
+    $parentRelationCol = config('app.pump.reference.parentRelationColumn', 9);
+    $monitoringProfileTypeCol = config('app.pump.reference.monitoringProfileTypeColumn', 10);
+    $unitCol = config('app.pump.reference.unitColumn', 11);
 
     // TODO: Получить список всех программ ОМС описанных в файле
     $omsProgramIds =
@@ -484,25 +504,25 @@ Route::get('/fill-pump-monitoring-profiles', function () {
     */
 
     $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xlsx");
-    $path = 'xlsx/pump';
-    $templateFileName = 'PumpMonitoringProfiles_v8.xlsx';
+    $path = config('app.pump.xlsxPath', 'xlsx/pump');
+    $templateFileName = config('app.pump.reference.referenceFileName', 'PumpMonitoringProfiles_v8.xlsx');
     $templateFilePath = $path . DIRECTORY_SEPARATOR . $templateFileName;
     $templateFullFilepath = Storage::path($templateFilePath);
 
     $spreadsheet = $reader->load($templateFullFilepath);
     $sheet = $spreadsheet->getActiveSheet();
 
-    $omsProgramCol = 1;
-    // $recIdCol = 2;
-    // $parentRecIdCol = 3;
-    $monitoringProfileCodeCol = 4;
-    $monitoringProfileParentCodeCol = 5;
-    $monitoringProfileShortNameCol = 6;
-    $monitoringProfileNameCol = 7;
-    // $monitoringProfileNestingLevel = 8;
-    $parentRelationCol = 9;
-    $monitoringProfileTypeCol = 10;
-    $unitCol = 11;
+    $omsProgramCol = config('app.pump.reference.omsProgramColumn', 1);
+    // $recIdCol = config('app.pump.reference.recIdColumn', 2);
+    // $parentRecIdCol = config('app.pump.reference.parentRecIdColumn', 3);
+    $monitoringProfileCodeCol = config('app.pump.reference.monitoringProfileCodeColumn', 4);
+    $monitoringProfileParentCodeCol = config('app.pump.reference.monitoringProfileParentCodeColumn', 5);
+    $monitoringProfileShortNameCol = config('app.pump.reference.monitoringProfileShortNameColumn', 6);
+    $monitoringProfileNameCol = config('app.pump.reference.monitoringProfileNameColumn', 7);
+    // $monitoringProfileNestingLevel = config('app.pump.reference.monitoringProfileNestingLevelColumn', 8);
+    $parentRelationCol = config('app.pump.reference.parentRelationCol', 9);
+    $monitoringProfileTypeCol = config('app.pump.reference.monitoringProfileTypeColumn', 10);
+    $unitCol = config('app.pump.reference.unitColumn', 11);
 
 
     // TODO: Получить список всех программ ОМС описанных в файле
@@ -630,12 +650,12 @@ Route::get('/fill-pump-monitoring-profiles', function () {
  */
 Route::get('/pump-monitoring-profiles-errors-highlight-with-color', function () {
     $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xlsx");
-    $path = 'xlsx/pump';
-    $errorsFileName = 'PumpPggErrors.txt';
+    $path = config('app.pump.xlsxPath', 'xlsx/pump');
+    $errorsFileName = config('app.pump.errors.errorsFileName', 'PumpPggErrors.txt');
     $errorsFilePath = $path . DIRECTORY_SEPARATOR . $errorsFileName;
     $errorsFullFilepath = Storage::path($errorsFilePath);
 
-    $templateFileName = 'PumpPgg_with_errors.xlsx';
+    $templateFileName = config('app.pump.errors.templateFileName', 'PumpPgg_with_errors.xlsx');
     $templateFilePath = $path . DIRECTORY_SEPARATOR . $templateFileName;
     $templateFullFilepath = Storage::path($templateFilePath);
 

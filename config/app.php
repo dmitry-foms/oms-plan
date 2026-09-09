@@ -234,4 +234,39 @@ return [
 
     ],
 
+    /* Web controller config */
+    'pump' => [
+        'xlsxPath' => 'xlsx/pump',
+        'relations' => [
+            'templateFileName' => 'PumpPgg2026.xlsx',
+            'monitoringProfileCodeColumn' => 2,
+            'monitoringProfileNameColumn' => 1,
+            'plannedIndicatorIdColumn' => 3,
+        ],
+        'relations_in' => [
+            'templateFileNameIn' => 'PumpPgg2026_IN.xlsx',
+            'monitoringProfileCodeColumn' => 2,
+            'monitoringProfileNameColumn' => 1,
+            'plannedIndicatorIdColumn' => 3,
+        ],
+        'reference' => [
+            'referenceFileName' => 'PumpMonitoringProfiles_v8.xlsx',
+            'omsProgramColumn' => 1,
+            'recIdColumn' => 2,
+            'parentRecIdColumn' => 3,
+            'monitoringProfileCodeColumn' => 4,
+            'monitoringProfileParentCodeColumn' => 5,
+            'monitoringProfileShortNameColumn' => 6,
+            'monitoringProfileNameColumn' => 7,
+            'monitoringProfileNestingLevelColumn' => 8,
+            'parentRelationColumn' => 9,
+            'monitoringProfileTypeColumn' => 10,
+            'unitColumn' => 11,
+        ],
+        'errors' => [
+            'errorsFileName' => 'PumpPggErrors.txt',
+            'templateFileName' => 'PumpPgg_with_errors.xlsx',
+        ],
+    ],
+
 ];
