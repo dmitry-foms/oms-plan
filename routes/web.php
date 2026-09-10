@@ -163,7 +163,7 @@ Route::get('/get-pump-monitoring-profiles-planned-indicators-relationships', fun
 
     // Определение начальной строки с данными
     for ($i = 1; $i <= $endRow; $i++) {
-        if ((preg_match('/\d{6}/', $sheet->getCell([$monitoringProfileCodeCol, $i])->getValue()) == 1) &&
+        if ((preg_match('/^\s*[\dА-ЯЁа-яё]{6}\s*$/u', $sheet->getCell([$monitoringProfileCodeCol, $i])->getValue()) == 1) &&
             (strlen(trim($sheet->getCell([$monitoringProfileNameCol, $i])->getValue())) > 0) &&
             (preg_match('/\d+/', $sheet->getCell([$plannedIndicatorIdCol, $i])->getValue()) == 1)) {
             $startRow = $i;
@@ -260,7 +260,7 @@ Route::get('/fill-pump-monitoring-profiles-planned-indicators-relationships', fu
 
     // Определение начальной строки с данными
     for ($i = 1; $i <= $endRow; $i++) {
-        if ((preg_match('/\d{6}/', $sheet->getCell([$monitoringProfileCodeCol, $i])->getValue()) == 1) &&
+        if ((preg_match('/^\s*[\dА-ЯЁа-яё]{6}\s*$/u', $sheet->getCell([$monitoringProfileCodeCol, $i])->getValue()) == 1) &&
             (strlen(trim($sheet->getCell([$monitoringProfileNameCol, $i])->getValue())) > 0) &&
             (preg_match('/\d+/', $sheet->getCell([$plannedIndicatorIdCol, $i])->getValue()) == 1)) {
             $startRow = $i;
