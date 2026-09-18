@@ -408,6 +408,9 @@ Route::get('/pump-monitoring-profiles-update-codes', function () {
 
     // TODO: Проверить заголовки
 
+    $oldCodePrefix = date('ymd') . '_';
+    $lastDayOfPreviosYear = (date('Y') - 1) . '-12-31 23:59:59';
+
     $iterator->next();
     while ($iterator->valid()) {
         $row = $iterator->current();
@@ -452,15 +455,24 @@ Route::get('/pump-monitoring-profiles-update-codes', function () {
                 // || $pOld->parentCode !== $p->parentCode
                 //|| $pOld->parent_id !== $p->parent_id
                 || $pOld->short_name !== $p->short_name
-                || $pOld->name !== $p->name
+                //|| $pOld->name !== $p->name // $pOld->name всегда равно $p->name поскольку $pOld ищется в БД по $p->name
                 || $pOld->relation_type_id !== $p->relation_type_id
             ) {
-                throw new Exception("Профиль мониторинга с кодом $p->code существует и имеет значения отличные от полученных");
+                if ($pOld->code === $p->code) { // Закрываем и меняем код профиля
+                    $pOld->effective_to = $lastDayOfPreviosYear;
+                    $pOld->code = $oldCodePrefix . $pOld->code;
+                    $pOld->save();
+                } else {
+                    throw new Exception("Профиль мониторинга с кодом $p->code существует и имеет значения отличные от полученных: " .
+                                        (($pOld->oms_program_id !== $p->oms_program_id)?('Идентификатор программы ОМС ' . $pOld->oms_program_id . '<>' . $p->oms_program_id . ', '):'') . 
+                                        (($pOld->short_name !== $p->short_name)?('Краткое название ' . $pOld->short_name . '<>' . $p->short_name . ', '):'') . 
+                                        (($pOld->relation_type_id !== $p->relation_type_id)?('Отношение к родителю ' . $pOld->relation_type_id . '<>' . $p->relation_type_id):''));
+                }
             } else {
                 if ($pOld->code !== $p->code) {
                     $byCode = PumpMonitoringProfiles::where('code', $p->code)->first();
                     if ($byCode !== null) {
-                        $byCode->code = 'old_' . $byCode->code;
+                        $byCode->code = $oldCodePrefix . $byCode->code;
                         $byCode->save();
                     }
                     $pOld->code = $p->code;
